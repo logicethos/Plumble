@@ -109,6 +109,8 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     private AlertDialog mErrorDialog;
     private AlertDialog.Builder mDisconnectPromptBuilder;
 
+    private boolean KioskMode = false;
+
     /** List of fragments to be notified about service state changes. */
     private List<JumbleServiceFragment> mServiceFragments = new ArrayList<JumbleServiceFragment>();
 
@@ -258,7 +260,9 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mSettings = Settings.getInstance(this);
-        setTheme(mSettings.getTheme());
+        int theme = mSettings.getTheme();
+        if (theme == R.style.Theme_Kiosk) KioskMode=true;
+        setTheme(theme);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -374,13 +378,23 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     @Override
     protected void onPause() {
         super.onPause();
-        if(mService != null)
-            try {
-                mService.unregisterObserver(mObserver);
-            } catch (RemoteException e) {
-                e.printStackTrace();
+
+        if (!KioskMode) {
+            if (mService != null)
+            {
+                try {
+                    mService.unregisterObserver(mObserver);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            unbindService(mConnection);
             }
-        unbindService(mConnection);
+        }
+        else
+        {
+            android.app.ActivityManager activityManager = (android.app.ActivityManager) getApplicationContext().getSystemService(android.content.Context.ACTIVITY_SERVICE);
+            activityManager.moveTaskToFront(getTaskId(), 0);
+        }
     }
 
     @Override
@@ -486,6 +500,9 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
 
     @Override
     public void onBackPressed() {
+
+        if (KioskMode) return;
+        
         try {
             if(mService.isConnected()) {
                 mDisconnectPromptBuilder.show();

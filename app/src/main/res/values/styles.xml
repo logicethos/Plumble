@@ -136,4 +136,35 @@
     <style name="Theme.Plumble.Solarized.Dark.CardView" parent="CardView">
         <item name="cardBackgroundColor">@color/solarized_base02</item>
     </style>
+
+
+    <style name="Theme.Kiosk" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:textColorPrimary">#000</item>
+        <item name="android:textColorSecondary">#666</item>
+        <item name="android:textColorPrimaryInverse">#FFF</item>
+        <item name="android:textColorSecondaryInverse">#AAA</item>
+
+        <item name="android:actionBarStyle">@style/PlumbleDarkActionBar</item>
+        <item name="actionBarStyle">@style/PlumbleDarkActionBar</item>
+
+        <item name="colorPrimary">#454D5E</item>
+        <item name="colorPrimaryDark">#2F3440</item>
+        <item name="colorAccent">#454D5E</item>
+
+        <!-- Window attributes -->
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+
+
+        <item name="cardStyle">@style/Theme.Kiosk.CardView</item>
+    </style>
+
+    <style name="Theme.Kiosk.CardView" parent="CardView">
+    </style>
+
+
+
+
 </resources>

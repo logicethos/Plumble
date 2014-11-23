@@ -88,6 +88,7 @@ public class Settings {
     public static final String ARRAY_THEME_DARK = "dark";
     public static final String ARRAY_THEME_SOLARIZED_LIGHT = "solarizedLight";
     public static final String ARRAY_THEME_SOLARIZED_DARK = "solarizedDark";
+    public static final String ARRAY_THEME_KIOSK = "kiosk";
 
     public static final String PREF_CERT = "certificatePath";
     public static final String PREF_CERT_PASSWORD = "certificatePassword";
@@ -249,6 +250,8 @@ public class Settings {
             return R.style.Theme_Plumble_Solarized_Light;
         else if(ARRAY_THEME_SOLARIZED_DARK.equals(theme))
             return R.style.Theme_Plumble_Solarized_Dark;
+        else if(ARRAY_THEME_KIOSK.equals(theme))
+            return R.style.Theme_Kiosk;
         return -1;
     }
 
