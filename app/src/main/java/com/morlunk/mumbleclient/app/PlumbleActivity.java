@@ -109,7 +109,8 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     private AlertDialog mErrorDialog;
     private AlertDialog.Builder mDisconnectPromptBuilder;
 
-    private boolean KioskMode = false;
+    public static boolean KioskMode = false;
+    public static boolean KioskModePasswordOK = false;
 
     /** List of fragments to be notified about service state changes. */
     private List<JumbleServiceFragment> mServiceFragments = new ArrayList<JumbleServiceFragment>();
@@ -261,7 +262,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     protected void onCreate(Bundle savedInstanceState) {
         mSettings = Settings.getInstance(this);
         int theme = mSettings.getTheme();
-        if (theme == R.style.Theme_Kiosk) KioskMode=true;
+        KioskMode = (theme == R.style.Theme_Kiosk);
         setTheme(theme);
 
         super.onCreate(savedInstanceState);
@@ -409,7 +410,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem disconnectButton = menu.findItem(R.id.action_disconnect);
         try {
-            disconnectButton.setVisible(mService != null && mService.isConnected());
+            disconnectButton.setVisible(mService != null && mService.isConnected() && !KioskMode);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -550,7 +551,33 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
 //        Intent intent = new Intent(this, WizardActivity.class);
 //        startActivity(intent);
     }
+    public void AskPassword() {
 
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+        alert.setTitle("Settings");
+        alert.setMessage("Enter Password");
+
+
+        final EditText input = new EditText(this);
+        alert.setView(input);
+
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                if (input.getText().toString().equals("unlockme1"))
+                {
+                   PlumbleActivity.KioskModePasswordOK = true;
+                    CharSequence text = "Settings unlocked";
+                    int duration = Toast.LENGTH_SHORT;
+
+                    Toast toast = Toast.makeText(getApplicationContext(), text, duration);
+                    toast.show();
+                }
+            }
+        });
+
+        alert.show();
+    }
     /**
      * Loads a fragment from the drawer.
      */
@@ -584,8 +611,15 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                 fragmentClass = PublicServerListFragment.class;
                 break;
             case DrawerAdapter.ITEM_SETTINGS:
-                Intent prefIntent = new Intent(this, Preferences.class);
-                startActivity(prefIntent);
+                if (!KioskMode || KioskModePasswordOK) {
+                    KioskModePasswordOK=false;
+                    Intent prefIntent = new Intent(this, Preferences.class);
+                    startActivity(prefIntent);
+                }
+                else
+                {
+                    AskPassword();
+                }
                 return;
             default:
                 return;

@@ -42,6 +42,7 @@ import com.morlunk.jumble.model.User;
 import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.Settings;
+import com.morlunk.mumbleclient.app.PlumbleActivity;
 import com.morlunk.mumbleclient.util.JumbleServiceFragment;
 
 import java.util.ArrayList;
@@ -86,7 +87,7 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+        setHasOptionsMenu(!PlumbleActivity.KioskMode);
     }
 
     @Override

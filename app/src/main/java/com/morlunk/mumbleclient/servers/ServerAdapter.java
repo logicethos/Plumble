@@ -31,6 +31,7 @@ import android.widget.TextView;
 
 import com.morlunk.jumble.model.Server;
 import com.morlunk.mumbleclient.R;
+import com.morlunk.mumbleclient.app.PlumbleActivity;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -82,14 +83,21 @@ public abstract class ServerAdapter<E extends Server> extends ArrayAdapter<E> {
         if(userText != null) userText.setText(server.getUsername());
         if(addressText != null) addressText.setText(server.getHost()+":"+server.getPort());
 
+        if (PlumbleActivity.KioskMode) addressText.setVisibility(View.INVISIBLE);
         final ImageView moreButton = (ImageView) view.findViewById(R.id.server_row_more);
         if(moreButton != null) {
-            moreButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onServerOptionsClick(server, moreButton);
-                }
-            });
+            if (PlumbleActivity.KioskMode)
+            {
+                moreButton.setVisibility(View.INVISIBLE);
+            }
+            else {
+                moreButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        onServerOptionsClick(server, moreButton);
+                    }
+                });
+            }
         }
 
         TextView serverVersionText = (TextView) view.findViewById(R.id.server_row_version_status);

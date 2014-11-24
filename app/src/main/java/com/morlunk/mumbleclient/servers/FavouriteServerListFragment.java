@@ -39,6 +39,7 @@ import android.widget.TextView;
 import com.morlunk.jumble.model.Server;
 import com.morlunk.mumbleclient.BuildConfig;
 import com.morlunk.mumbleclient.R;
+import com.morlunk.mumbleclient.app.PlumbleActivity;
 import com.morlunk.mumbleclient.db.DatabaseProvider;
 import com.morlunk.mumbleclient.db.PublicServer;
 
@@ -81,7 +82,6 @@ public class FavouriteServerListFragment extends Fragment implements OnItemClick
         mServerGrid = (GridView) view.findViewById(R.id.server_list_grid);
         mServerGrid.setOnItemClickListener(this);
         mServerGrid.setEmptyView(view.findViewById(R.id.server_list_grid_empty));
-
         TextView donateText = (TextView) view.findViewById(R.id.donate_box);
         donateText.setVisibility(BuildConfig.DONATE_NAG ? View.VISIBLE : View.GONE);
         donateText.setOnClickListener(new OnClickListener() {
@@ -92,14 +92,21 @@ public class FavouriteServerListFragment extends Fragment implements OnItemClick
             }
         });
 
-        registerForContextMenu(mServerGrid);
+        if (PlumbleActivity.KioskMode && getServers().size()>0) {
+            mConnectHandler.connectToServer(getServers().get(0));
+        }else {
+          registerForContextMenu(mServerGrid);
+        }
+
         return view;
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.fragment_server_list, menu);
+        if (!PlumbleActivity.KioskMode) {
+            super.onCreateOptionsMenu(menu, inflater);
+            inflater.inflate(R.menu.fragment_server_list, menu);
+        }
     }
 
     @Override

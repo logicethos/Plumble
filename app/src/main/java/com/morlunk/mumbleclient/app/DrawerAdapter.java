@@ -179,11 +179,13 @@ public class DrawerAdapter extends ArrayAdapter<DrawerAdapter.DrawerRow> {
                 case ITEM_INFO:
                 case ITEM_ACCESS_TOKENS:
                 case ITEM_PINNED_CHANNELS:
-                    return mProvider.isConnected();
+                    return mProvider.isConnected() && !PlumbleActivity.KioskMode;
 //                case ITEM_LAN:
 //                    return false;
-                default:
+                case ITEM_SETTINGS:
                     return true;
+                default:
+                    return true && !PlumbleActivity.KioskMode;
             }
         }
         return false; // Default false for headers
