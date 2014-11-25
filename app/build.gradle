@@ -61,7 +61,7 @@ android {
     aaptOptions.useAaptPngCruncher = true
 
     defaultConfig {
-        minSdkVersion 9
+        minSdkVersion 14
         targetSdkVersion 21
         applicationId "com.morlunk.mumbleclient"
         versionCode 72

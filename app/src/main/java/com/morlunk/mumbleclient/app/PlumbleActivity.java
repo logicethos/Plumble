@@ -263,7 +263,17 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         mSettings = Settings.getInstance(this);
         int theme = mSettings.getTheme();
         KioskMode = (theme == R.style.Theme_Kiosk);
+        if (KioskMode) {
+            if (!mSettings.getInputMethod().equals(Settings.ARRAY_INPUT_METHOD_PTT)) {
+                mSettings.setInputMethod(Settings.ARRAY_INPUT_METHOD_PTT);
+            }
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD|
+                    + WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+
+        }
+
         setTheme(theme);
+
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -376,8 +386,10 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         bindService(connectIntent, mConnection, BIND_AUTO_CREATE);
     }
 
+
     @Override
     protected void onPause() {
+
         super.onPause();
 
         if (!KioskMode) {
@@ -390,11 +402,6 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                 }
             unbindService(mConnection);
             }
-        }
-        else
-        {
-            android.app.ActivityManager activityManager = (android.app.ActivityManager) getApplicationContext().getSystemService(android.content.Context.ACTIVITY_SERVICE);
-            activityManager.moveTaskToFront(getTaskId(), 0);
         }
     }
 
