@@ -105,7 +105,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     private ListView mDrawerList;
     private DrawerAdapter mDrawerAdapter;
 
-    private ProgressDialog mConnectingDialog;
+    private static ProgressDialog mConnectingDialog;
     private AlertDialog mErrorDialog;
     private AlertDialog.Builder mDisconnectPromptBuilder;
 
@@ -155,7 +155,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
             mDrawerAdapter.notifyDataSetChanged();
             supportInvalidateOptionsMenu();
 
-            mConnectingDialog.dismiss();
+            if(mConnectingDialog != null) mConnectingDialog.dismiss();
             if(mErrorDialog != null) mErrorDialog.dismiss();
         }
 
@@ -168,13 +168,16 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
             mDrawerAdapter.notifyDataSetChanged();
             supportInvalidateOptionsMenu();
 
-            mConnectingDialog.dismiss();
+            if(mConnectingDialog != null) mConnectingDialog.dismiss();
         }
 
         @Override
         public void onConnectionError(String message, boolean reconnecting) throws RemoteException {
+
             if(mErrorDialog != null) mErrorDialog.dismiss();
-            mConnectingDialog.dismiss();
+            if (KioskMode) return;
+            if(mConnectingDialog != null) mConnectingDialog.dismiss();
+
 
             AlertDialog.Builder ab = new AlertDialog.Builder(PlumbleActivity.this);
             ab.setTitle(R.string.connectionRefused);
@@ -311,21 +314,6 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         Drawable logo = getResources().getDrawable(R.drawable.ic_home);
         logo.setColorFilter(iconColor, PorterDuff.Mode.MULTIPLY);
         getSupportActionBar().setLogo(logo);
-
-        mConnectingDialog = new ProgressDialog(this);
-        mConnectingDialog.setIndeterminate(true);
-        mConnectingDialog.setCancelable(true);
-        mConnectingDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                try {
-                    mService.disconnect();
-                    Toast.makeText(PlumbleActivity.this, R.string.cancelled, Toast.LENGTH_SHORT).show();
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
 
         AlertDialog.Builder dadb = new AlertDialog.Builder(this);
         dadb.setMessage(R.string.disconnectSure);
@@ -680,7 +668,29 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
             }
         }
 
-        mConnectingDialog.setMessage(getString(R.string.connecting_to_server, server.getHost(), server.getPort()));
+        mConnectingDialog = new ProgressDialog(this);
+        mConnectingDialog.setIndeterminate(true);
+        mConnectingDialog.setCancelable(!KioskMode);
+        if (KioskMode) {
+            mConnectingDialog.setMessage("Connecting to server");
+        }
+        else
+        {
+            mConnectingDialog.setMessage(getString(R.string.connecting_to_server, server.getHost(), server.getPort()));
+            mConnectingDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    try {
+                        mService.disconnect();
+                        Toast.makeText(PlumbleActivity.this, R.string.cancelled, Toast.LENGTH_SHORT).show();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+
         mConnectingDialog.show();
 
         ServerConnectTask connectTask = new ServerConnectTask(this, mDatabase);

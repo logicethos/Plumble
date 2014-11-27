@@ -35,6 +35,7 @@ import com.morlunk.jumble.model.User;
 import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.Settings;
+import com.morlunk.mumbleclient.app.PlumbleActivity;
 import com.morlunk.mumbleclient.service.ipc.TalkBroadcastReceiver;
 
 /**
@@ -96,7 +97,7 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
 
         @Override
         public void onConnectionError(String message, boolean reconnecting) throws RemoteException {
-            if(reconnecting) {
+            if(!PlumbleActivity.KioskMode && reconnecting) {
                 String tickerMessage = getString(R.string.reconnecting, RECONNECT_DELAY/1000);
                 if (mNotification != null) {
                     mNotification.setCustomContentText(tickerMessage);

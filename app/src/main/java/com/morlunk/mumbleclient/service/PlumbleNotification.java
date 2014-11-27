@@ -177,7 +177,7 @@ public class PlumbleNotification {
             builder.addAction(R.drawable.ic_action_channels,
                     mService.getString(R.string.overlay), PendingIntent.getBroadcast(mService, 2,
                             overlayIntent, PendingIntent.FLAG_CANCEL_CURRENT));
-        } else {
+        } else if (!PlumbleActivity.KioskMode){
             Intent cancelIntent = new Intent(BROADCAST_CANCEL_RECONNECT);
             builder.addAction(R.drawable.ic_action_delete_dark,
                     mService.getString(R.string.cancel_reconnect), PendingIntent.getBroadcast(mService, 2,
