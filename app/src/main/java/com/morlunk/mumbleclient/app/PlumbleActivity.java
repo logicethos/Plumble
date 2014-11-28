@@ -18,8 +18,10 @@
 package com.morlunk.mumbleclient.app;
 
 import android.app.AlertDialog;
+import android.app.KeyguardManager;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -270,9 +272,10 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
             if (!mSettings.getInputMethod().equals(Settings.ARRAY_INPUT_METHOD_PTT)) {
                 mSettings.setInputMethod(Settings.ARRAY_INPUT_METHOD_PTT);
             }
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD|
-                    + WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+            //getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD|
+            //        + WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
 
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         }
 
         setTheme(theme);
@@ -378,9 +381,16 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     @Override
     protected void onPause() {
 
-        super.onPause();
-
-        if (!KioskMode) {
+        if (KioskMode) {
+            //Restart Plumble activity if keyguard is locked
+            KeyguardManager km = (KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE);
+            if( km.inKeyguardRestrictedInputMode()) {
+                Intent intent = new Intent(getApplicationContext(), PlumbleActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(intent);
+            }
+        }
+        else {
             if (mService != null)
             {
                 try {
@@ -391,6 +401,9 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
             unbindService(mConnection);
             }
         }
+
+        super.onPause();
+
     }
 
     @Override
